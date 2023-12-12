@@ -1,30 +1,23 @@
+#include <Arduino.h>
 #include <Wire.h>
-# define I2C_SLAVE_ADDRESS 0x04
 
-int analogPin1 = A3; 
-int analogPin2 = A2; 
-int val1 = 0;  
-int val2 = 0;  
+#define I2C_DEVICE_ADDRESS 0x44
 
-void setup()
-{
-  Wire.begin(I2C_SLAVE_ADDRESS);
-  Serial.begin(9600); 
-  delay(1000);               
-  Wire.onRequest(requestEvents);
+void setup() {
+  Wire.begin(I2C_DEVICE_ADDRESS);
+  Wire.onReceive(receiveMsg);
+  Serial.begin(9600);
+  Serial.println("Listening for Input");
 }
 
-void loop() 
-{
-  val1 = analogRead(analogPin1);  // read the input pin
-  val2 = analogRead(analogPin2);  // read the input pin
-  Serial.println(val1);
-  Serial.println(val2);
-
+void loop() {
+  Serial.print(".");
+  delay(500);
 }
 
-void requestEvents()
-{
-  Wire.write(val1);
-  Wire.write(val2);
+void receiveMsg() {
+  if (Wire.available()) {
+    char c = Wire.read();
+    Serial.print(c);
+  }
 }
